@@ -7,8 +7,10 @@ Daemonize.pm deprecated from now(27.08.2013 22:26)
 =cut
 package D2;
 use strict;
+use warnings;
 use POSIX;
 use Carp;
+our $VERSION = 0.02;
 
 # simple constructor
 sub new {
@@ -46,6 +48,7 @@ sub init {
     if ($params->{pidfile}) {
         $self->check_pidfile($params->{pidfile}) or croak 'Error pidfile';
         $self->{pidfile} = $params->{pidfile};
+        $self->{pid} = 1;
     }
     if ($params->{forward_env} && ref $params->{forward_env} eq 'ARRAY') {
         $self->{forward_env} = $params->{forward_env};
@@ -119,7 +122,9 @@ sub daemonize {
     unless ($self->{initialized}) {
         croak 'cant call daemonize';
     }
-    croak "Already Alive" unless $self->check_pid();
+    if ($self->{pid}) {
+        croak "Already Alive" unless $self->check_pid();
+    }
     chdir '/'                   or croak "Can't chdir to /: $!";
     unless($self->{outputs_enabled}) {
         open STDIN, '/dev/null'     or croak "Can't read /dev/null: $!";
@@ -128,7 +133,9 @@ sub daemonize {
     }
     defined(my $pid = fork)     or croak "Can't fork: $!";
     exit if $pid;
-    $self->write_pid();
+    if ($self->{pid}) {
+        $self->write_pid();
+    }
     setsid                      or croak "Can't start a new session: $!";
     umask 0;
     if ($self->{forward_env}) {
