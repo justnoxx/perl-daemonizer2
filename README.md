@@ -1,4 +1,4 @@
 perl-daemonizer2
 ================
 
-Perl module for aesy daemonization perl script. Minimal deps.
+Perl module for easy daemonization of perl scripts.
