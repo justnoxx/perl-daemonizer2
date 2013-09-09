@@ -22,7 +22,7 @@ my %WriteMakefileArgs = (
         "Test::More" => "0.88",
         "Test::Requires" => 0
     },
-    "VERSION" => "0.02"
+    "VERSION" => "0.03"
 );
 
 

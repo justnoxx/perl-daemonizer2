@@ -10,7 +10,7 @@ use strict;
 use warnings;
 use POSIX;
 use Carp;
-our $VERSION = 0.02;
+our $VERSION = 0.03;
 
 # simple constructor
 sub new {
@@ -58,6 +58,18 @@ sub init {
     }
     if ($params->{debug}) {
         $self->{outputs_enabled} = 1;
+    }
+    # checking signals section, if exists
+    if ($params->{SIG}) {
+        if (ref $params->{SIG} ne 'HASH') {
+            croak 'Wrong signal section, must be hashref.';
+        }
+        foreach my $sigkey (keys %{$params->{SIG}}) {
+            if ($params->{SIG}->{$sigkey} ne 'IGNORE' && ref $params->{SIG}->{$sigkey} ne 'CODE') {
+                croak 'Wrong signal handler for ' . $sigkey . ' signal';
+            }
+            $self->{SIG}->{$sigkey} = $params->{SIG}->{$sigkey};
+        }
     }
     $self->{initialized} = 1;
     return 1;
@@ -148,7 +160,13 @@ sub daemonize {
             $ENV{$env_key} = $self->{set_env}->{$env_key};
         }
     }
+    # now, time to set signals handlers
+    foreach my $sigkey (keys %{$self->{SIG}}) {
+        $SIG{$sigkey} = $self->{SIG}->{$sigkey};
+    }
     return $$;
 }
 
 1;
+__END__
+
