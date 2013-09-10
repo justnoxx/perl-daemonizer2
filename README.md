@@ -52,6 +52,7 @@ New accepts hash and hashref. Example:
 #### daemonize
 After new() call you can daemonize.
 Use daemonize without params.
+
     $d2->daemonize();
 
 See complete examples in eg folder.
