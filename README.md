@@ -37,11 +37,17 @@ There are none required params, so it can be called as
     my $d2 = D2->new();
 
 Possible params:
+
 *pidfile* - absolute path to pidfile of daemon. If it can't be accessed or created D2 will croak in new() call.
+
 *as_username* - username, behalf of daemonization will started. If impossible, D2 will croak in new() call.
+
 *as_uid* - see *as_username*, but uses uid as param(0 for root, for example). as\_uid and as\_username can't be present at once.
+
 *debug* - 1 or 0, default 0. If enabled, STDIN, STDOUT, STDERR will not be send to /dev/null.
+
 *SIG* - hashref of signal handlers. Usage example see in eg folder.
+
 
 New accepts hash and hashref. Example:
 
