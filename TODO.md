@@ -1,4 +1,6 @@
 # TODO list
 
 * TCP support
-* Supervisor support
+* Supervisor behaviour support
+* setgid 
+* tests
