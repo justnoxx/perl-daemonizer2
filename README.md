@@ -44,6 +44,7 @@ Possible params:
 *SIG* - hashref of signal handlers. Usage example see in eg folder.
 
 New accepts hash and hashref. Example:
+
     my $d2 = D2->new(
         pidfile     =>  '/var/run/mydaemon.pid',
         as_username =>  'root',
