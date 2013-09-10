@@ -10,7 +10,7 @@ use strict;
 use warnings;
 use POSIX;
 use Carp;
-our $VERSION = 0.03;
+our $VERSION = 0.04;
 
 # simple constructor
 sub new {
@@ -44,6 +44,9 @@ sub init {
     }
     if ($self->{need_setuid}) {
         setuid($self->{setuid})
+    }
+    if ($self->{need_setgid}) {
+        setgid($self->{setgid});
     }
     if ($params->{pidfile}) {
         $self->check_pidfile($params->{pidfile}) or croak 'Error pidfile';
@@ -89,16 +92,40 @@ sub check_pidfile {
 }
 sub check_as_username {
     my ($self, $name) = @_;
+    my $group;
+    if ($name =~ m/^(.*?):(.*?)$/s) {
+        $name = $1;
+        $group = $2;
+    }
     my $wantuid = getpwnam($name);
-    $self->check_as_userid($wantuid);
+    if ($group) {
+        my $wantgroup = getgrnam($group);
+        $self->check_as_userid($wantuid, $wantgroup);
+    }
+    else {
+        $self->check_as_userid($wantuid);
+    }
 }
 sub check_as_userid {
-    my ($self, $userid) = @_;
+    my ($self, $userid, $gid) = @_;
+    warn "$userid, $gid";
+    if ($userid =~ m/^(.*?):(.*?)$/s) {
+        $userid = $1;
+        $gid = $2;
+    }
+    if ($gid || $gid == 0) {
+        setgid($gid) or croak qq/Can't setgid $gid. Group with that gid does not exists of permission denied/;
+        $self->{setgid} = $gid;
+        $self->{need_setgid} = 1;
+    }
     my $current_userid = $<;
+    my $current_group_id = $(;
     setuid($userid) or croak qq/Can't setuid $userid. User with that uid does not exists or permission denied/;
-    setuid($current_userid);
     $self->{setuid} = $userid;
     $self->{need_setuid} = 1;
+    
+    setuid($current_userid);
+    setgid($current_group_id);   
 }
 sub read_pid {
     my $self = shift;
