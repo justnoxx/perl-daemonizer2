@@ -40,7 +40,7 @@ Possible params:
 
 *pidfile* - absolute path to pidfile of daemon. If it can't be accessed or created D2 will croak in new() call.
 
-*as_username* - username, behalf of daemonization will started. If impossible, D2 will croak in new() call.
+*as_username* - username, behalf of daemonization will started. If impossible, D2 will croak in new() call. Also supports username:usergroup syntax.
 
 *as_uid* - see *as_username*, but uses uid as param(0 for root, for example). as\_uid and as\_username can't be present at once.
 
@@ -63,3 +63,4 @@ Use daemonize without params.
     $d2->daemonize();
 
 See complete examples in eg folder.
+
